@@ -8,16 +8,16 @@
 
 'use strict';
 
-var expect = require('chai').expect;
-var MongoClient = require('mongodb');
+const StockHandler = require('../controllers/stockHandler');
 
-const CONNECTION_STRING = process.env.DB; //MongoClient.connect(CONNECTION_STRING, function(err, db) {});
+module.exports = (app) => {
 
-module.exports = function (app) {
-
-  app.route('/api/stock-prices')
-    .get(function (req, res){
-      console.log(req.query);
-    });
+  app.route('/api/stock-prices').get((req, res) => {
+    
+    if(!req.query.stock) res.status(400).send('missing query stock');
+    else if(!Array.isArray(req.query.stock)) StockHandler.handleSingleStock(req, res);
+    else StockHandler.handleMultiStocks(req, res);
+    
+  });
     
 };
